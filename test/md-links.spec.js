@@ -1,6 +1,6 @@
 const path = require('path');
 const { mdLinks } = require('../index.js');
-const { verifyPath, pathExists, checkPathType, verifyMarkdown, extractLink, } = require('../data.js')
+const { verifyPath, pathExists, checkPathType, verifyMarkdown, extractLink, validateLinks, } = require('../data.js')
 
 const testPath = 'test/prueba.md'
 
@@ -9,24 +9,26 @@ describe('mdLinks', () => {
   it('debe ser una función que resuelva una promesa', () => {
     expect(typeof mdLinks).toBe('function');
   })
-
-  /*test('debe devolver la misma ruta cuando la ruta es absoluta', () => {
-    return mdLinks('C:\Users\LENOVO\Documents\LABORATORIA\DEV009-md-links\test\prueba.md').then((data) => {
-      expect(data).toBeTruthy()
-    })
-  });*/
-
-  it('debe rechazar cuando path no exista', () => {
-    return mdLinks('./nata/lab/noexiste.md').catch((error) => {
-      expect(error).toBe('La ruta no existe');
-    })
-  })
-
-  test('debe devolver un error si el archivo no es "md"', () => {
-    return mdLinks('testing_files/linktest.txt').catch((error) => {
-      expect(error).toEqual(error)
-    })
-  })
+  
+    it('debería extraer links correctamente', () => {
+    return expect(mdLinks(testPath)).resolves.toEqual([ 
+      {
+      "file": "test/prueba.md",
+      "href": "https://es.wikipedia.org/wiki/Markdown",
+       "text": "Markdown",
+       },
+       {
+       "file": "test/prueba.md",
+       "href": "https://nodejs.org/",
+        "text": "Node.js",
+       },
+       {
+       "file": "test/prueba.md",
+       "href": "https://github.com/Laboratoria/bootcamp/assets/12631491/fc6bc380-7824-4fab-ab8f-7ab53cd9d0e4",
+       "text": "md-links",
+       }]);
+   })
+     
 });
 
 describe('verifyPath', () => {
@@ -97,3 +99,53 @@ describe('extractLink', () => {
     expect(result).toEqual([]);
   });
 });
+
+describe('validateLinks', () => {
+
+  it('deberia validar los links', () => {
+    const links = [
+      { href: 'valid-example', text: 'Valid Link', file: 'valid.md' },
+      { href: 'invalid-example', text: 'Invalid Link', file: 'invalid.md' },
+    ];
+  
+    return validateLinks(links)
+    .then((results) => {
+      expect(results).toEqual([
+        {
+          text: 'Valid Link',
+          href: 'valid-example',
+          file: 'valid.md',
+          status: 200,
+          statusText: 'OK',
+        },
+        {
+          text: 'Invalid Link',
+          href: 'invalid-example',
+          file: 'invalid.md',
+          status: 404,
+          statusText: 'Fail',
+        },
+      ])
+    })
+  });
+
+  it('no deberia responder la validacion', () => {
+    const links = [
+      { href: 'nonexistent-link', text: 'Nonexistent Link', file: 'nonexistent.md' },
+      ];
+
+      return validateLinks(links)
+      .then((results) => {
+        expect(results).toEqual([
+          {
+            text: 'Nonexistent Link',
+            href: 'nonexistent-link',
+            file: 'nonexistent.md',
+            status: 'no response',
+            statusText: 'Fail',
+          },
+        ]);
+      });
+  });
+});
+

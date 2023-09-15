@@ -1,5 +1,6 @@
 const pathModulo = require('path');
 const fs = require('fs');
+const axios = require('axios');
 
 // Función para verificar si la ruta es absoluta, sino lo es convertir la ruta relativa en absoluta
 function verifyPath(file) {
@@ -61,31 +62,62 @@ function readFileMarkdown(file) {
       if (err) {
         reject(error);
       } else {
-      resolve(data);
+        resolve(data);
       }
-      });
+    });
   });
 }
 // Función que busca y devuelve los enlaces encontrados en el contenido
 // Recibe como parámetros 'data' (el contenido del archivo) 
 const extractLink = (data, archivo) => {
-  const regularExpression =  /\[([^\]]+)\]\((http[s]?:\/\/[^\)]+)\)/g;
-  const linkObjects = [];
+  const regularExpression = /\[([^\]]+)\]\((http[s]?:\/\/[^\)]+)\)/g;
+  const links = [];
   let match;
   // Aquí comienza un bucle while que se ejecutará mientras encuentre coincidencias en el contenido.
   // La función exec() de la expresión regular busca coincidencias en el contenido.
   // Si encuentra una coincidencia, la asigna a la variable match y el bucle se ejecuta.
   // Si no encuentra más coincidencias, la función devuelve null y el bucle se detiene.
   while ((match = regularExpression.exec(data)) !== null) {
-    linkObjects.push({ // Se agrega el objetoEnlace a la lista de enlaces
+    links.push({ // Se agrega el objetoEnlace a la lista de enlaces
       href: match[2],
       text: match[1],
       file: archivo,
     });
   }
-console.log(linkObjects)
-  return linkObjects;
+  console.log(links)
+  return links;
 };
 
+// Función que valida los enlaces encontrados
+// Devuelve una promesa que se resolverá cuando todas las solicitudes de validación de los enlaces se completen
+function validateLinks(links) {
+  // Se crea un nuevo array para almacenar las solicitudes HTTP
+  const validatePromises = links.map((link) => {
+    // Se hace una solicitud HEAD a la URL del enlace y devuelve una promesa
+    return axios.head(link.href)
+      .then((response) => {
+        // Cuando la solicitud se resuelve con éxito, se actualizan las propiedades del link
+        return {
+          text: link.test,
+          href: link.href,
+          file: link.file,
+          status: response.status,
+          statusText: response.statusText
+        }
+      })
+      .catch((error) => {
+        return {
+          text: link.test,
+          href: link.href,
+          file: link.file,
+          status: error.response ? error.response.status : "no response", // Estado de la solicitud en caso de error
+          statusText: 'fail' // Mensaje de error
+        }
+      })
+  })
+  // Retorna una nueva promesa que se resolverá cuando todas las solicitudes se completen
+  return Promise.all(validatePromises);
 
-module.exports = { verifyPath, pathExists, checkPathType, verifyMarkdown, readFileMarkdown, extractLink,  }
+};
+
+module.exports = { verifyPath, pathExists, checkPathType, verifyMarkdown, readFileMarkdown, extractLink, validateLinks, }
