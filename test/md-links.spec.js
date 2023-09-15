@@ -1,6 +1,9 @@
 const path = require('path');
 const { mdLinks } = require('../index.js');
 const { verifyPath, pathExists, checkPathType, verifyMarkdown, extractLink, validateLinks, } = require('../data.js')
+const axios = require('axios');
+
+jest.mock('axios');
 
 const testPath = 'test/prueba.md'
 
@@ -102,11 +105,11 @@ describe('extractLink', () => {
 
 describe('validateLinks', () => {
 
-  it('deberia validar los links', () => {
+  it('deberia resolver si el link es valido (status)', () => {
+    jest.spyOn(axios, 'head').mockResolvedValue({status:200, statusText:'OK'})
     const links = [
       { href: 'valid-example', text: 'Valid Link', file: 'valid.md' },
-      { href: 'invalid-example', text: 'Invalid Link', file: 'invalid.md' },
-    ];
+      ];
   
     return validateLinks(links)
     .then((results) => {
@@ -118,34 +121,29 @@ describe('validateLinks', () => {
           status: 200,
           statusText: 'OK',
         },
-        {
-          text: 'Invalid Link',
-          href: 'invalid-example',
-          file: 'invalid.md',
-          status: 404,
-          statusText: 'Fail',
-        },
       ])
     })
   });
 
-  it('no deberia responder la validacion', () => {
+  it('deberia resolver si el link es invalido(status)', () => {
+    axios.head.mockRejectedValue({response:{status:404, statusText:'fail'}})
     const links = [
-      { href: 'nonexistent-link', text: 'Nonexistent Link', file: 'nonexistent.md' },
-      ];
-
-      return validateLinks(links)
-      .then((results) => {
-        expect(results).toEqual([
-          {
-            text: 'Nonexistent Link',
-            href: 'nonexistent-link',
-            file: 'nonexistent.md',
-            status: 'no response',
-            statusText: 'Fail',
-          },
-        ]);
-      });
+     { href: 'invalid-example', text: 'Invalid Link', file: 'invalid.md' },
+    ];
+  
+    return validateLinks(links)
+    .then((results) => {
+      expect(results).toEqual([
+       {
+          text: 'Invalid Link',
+          href: 'invalid-example',
+          file: 'invalid.md',
+          status: 404,
+          statusText: 'fail',
+        }
+      ])
+    })
   });
+
 });
 

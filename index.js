@@ -12,7 +12,7 @@ function mdLinks(pathFile, options) {
       .then((data) => {
         const links = extractLink(data, pathFile);
         // Devuelve los enlaces extraídos como parte de la promesa resuelta
-        if (options !== true) {
+        if (options === true) {
           // Si options es true, entonces validamos los enlaces
           return validateLinks(links);
         } else {

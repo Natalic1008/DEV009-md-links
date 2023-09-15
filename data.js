@@ -78,13 +78,13 @@ const extractLink = (data, archivo) => {
   // Si encuentra una coincidencia, la asigna a la variable match y el bucle se ejecuta.
   // Si no encuentra más coincidencias, la función devuelve null y el bucle se detiene.
   while ((match = regularExpression.exec(data)) !== null) {
-    links.push({ // Se agrega el objetoEnlace a la lista de enlaces
+    links.push({ // Se agrega a links a la lista de enlaces
       href: match[2],
       text: match[1],
       file: archivo,
     });
   }
-  console.log(links)
+  /*console.log(links)*/
   return links;
 };
 
@@ -96,9 +96,9 @@ function validateLinks(links) {
     // Se hace una solicitud HEAD a la URL del enlace y devuelve una promesa
     return axios.head(link.href)
       .then((response) => {
-        // Cuando la solicitud se resuelve con éxito, se actualizan las propiedades del link
+                // Cuando la solicitud se resuelve con éxito, se actualizan las propiedades del link
         return {
-          text: link.test,
+          text: link.text,
           href: link.href,
           file: link.file,
           status: response.status,
@@ -107,10 +107,10 @@ function validateLinks(links) {
       })
       .catch((error) => {
         return {
-          text: link.test,
+          text: link.text,
           href: link.href,
           file: link.file,
-          status: error.response ? error.response.status : "no response", // Estado de la solicitud en caso de error
+          status: error.response ? error.response.status : "no responde", // Estado de la solicitud en caso de error
           statusText: 'fail' // Mensaje de error
         }
       })
