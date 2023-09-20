@@ -40,7 +40,7 @@ describe('mdLinks', () => {
       },
       {
         "file": "test/directorio",
-        "href": "https://jestjs.io/",
+        "href": "https://jestjs.io/1",
         "text": "Jest",
       },
     ]);
@@ -89,9 +89,9 @@ describe('mdLinks', () => {
             },
             {
               "file": "test/directorio",
-              "href": "https://jestjs.io/",
-              "status": 200,
-              "statusText": "OK",
+              "href": "https://jestjs.io/1",
+              "status": 404,
+              "statusText": "fail",
               "text": "Jest",
             },
           ]);
