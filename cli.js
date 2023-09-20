@@ -1,7 +1,7 @@
 const {mdLinks} = require('./index.js');
 
 
-mdLinks('test/prueba.md', true)
+mdLinks('test/directorio', true)
 .then ((resolve)=>{
  console.log(resolve);
 })

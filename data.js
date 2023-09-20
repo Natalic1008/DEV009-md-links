@@ -37,7 +37,7 @@ function checkPathType(file) {
       if (err) {
         reject(new Error('No se puede leer la ruta'));
       } else {
-        resolve(stats.isFile() ? file : readDirectory(file));
+        resolve(stats.isFile() ? file : readDir(file));
       }
     });
   })
@@ -78,13 +78,12 @@ const extractLink = (data, archivo) => {
   // Si encuentra una coincidencia, la asigna a la variable match y el bucle se ejecuta.
   // Si no encuentra más coincidencias, la función devuelve null y el bucle se detiene.
   while ((match = regularExpression.exec(data)) !== null) {
-    links.push({ // Se agrega a links a la lista de enlaces
+    links.push({ // Se agrega el enlace a la lista de enlaces links
       href: match[2],
       text: match[1],
       file: archivo,
     });
   }
-  /*console.log(links)*/
   return links;
 };
 
@@ -96,7 +95,7 @@ function validateLinks(links) {
     // Se hace una solicitud HEAD a la URL del enlace y devuelve una promesa
     return axios.head(link.href)
       .then((response) => {
-                // Cuando la solicitud se resuelve con éxito, se actualizan las propiedades del link
+        // Cuando la solicitud se resuelve con éxito, se actualizan las propiedades del link
         return {
           text: link.text,
           href: link.href,
@@ -119,5 +118,29 @@ function validateLinks(links) {
   return Promise.all(validatePromises);
 
 };
+//Función que lee el contenido de un directorio y devuelve arr con los archivos encontrados
+function readDir(path, filesArr = []) {
+  
+  const files = fs.readdirSync(path);
+  // fs.readdirSynca leer de manera síncrona el contenido del directorio y almacena los 
+  //nombres de los archivos y subdirectorios en un array llamado files.
 
-module.exports = { verifyPath, pathExists, checkPathType, verifyMarkdown, readFileMarkdown, extractLink, validateLinks, }
+    files.forEach((file) => {
+    
+    const filePath = pathModulo.join(path, file);
+    const stat = fs.statSync(filePath);
+
+    // Comprueba si el elemento actual es un directorio.
+    if (stat.isDirectory()) {
+      readDir(filePath, filesArr); 
+    } else {
+      filesArr.push(filePath);
+    }
+  });
+  
+  console.log(filesArr);
+  return filesArr;
+}
+
+
+module.exports = { verifyPath, pathExists, checkPathType, verifyMarkdown, readFileMarkdown, extractLink, validateLinks, readDir}
