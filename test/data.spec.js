@@ -99,7 +99,7 @@ describe('validateLinks', () => {
   });
 
   it('deberia resolver si el link es invalido(status)', () => {
-    axios.head.mockRejectedValue({ response: { status: 404, statusText: 'fail' } })
+    axios.head.mockRejectedValue({ response: { status: 'no responde', statusText: 'fail' } })
     const links = [
       { href: 'invalid-example', text: 'Invalid Link', file: 'invalid.md' },
     ];
@@ -111,7 +111,7 @@ describe('validateLinks', () => {
             text: 'Invalid Link',
             href: 'invalid-example',
             file: 'invalid.md',
-            status: 404,
+            status: 'no responde',
             statusText: 'fail',
           }
         ])
@@ -123,7 +123,9 @@ describe('readDir', () => {
   it('retorna un array con los archivos del directorio', () => {
     expect(readDir('test/directorio')).toEqual([
       "test\\directorio\\prueba.md",
-      "test\\directorio\\prueba2.md"
+      "test\\directorio\\prueba2.md",
+      "test\\directorio\\sinlink.htm",
+      "test\\directorio\\subcarpeta\\prueba3.md",
     ])
   });
  })

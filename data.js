@@ -101,7 +101,7 @@ function validateLinks(links) {
           href: link.href,
           file: link.file,
           status: response.status,
-          statusText: response.statusText
+          statusText: 'OK'
         }
       })
       .catch((error) => {
@@ -109,7 +109,7 @@ function validateLinks(links) {
           text: link.text,
           href: link.href,
           file: link.file,
-          status: error.response ? error.response.status : "no responde", // Estado de la solicitud en caso de error
+          status: error.status!== undefined ? error.status : "no responde", // Estado de la solicitud en caso de error
           statusText: 'fail' // Mensaje de error
         }
       })
@@ -132,15 +132,33 @@ function readDir(path, filesArr = []) {
 
     // Comprueba si el elemento actual es un directorio.
     if (stat.isDirectory()) {
-      readDir(filePath, filesArr); 
+      readDir(filePath, filesArr); //recursividad
     } else {
       filesArr.push(filePath);
     }
   });
   
-  console.log(filesArr);
+  /*console.log(filesArr);*/
   return filesArr;
+};
+//Funciones que genera las estadísticas de los links
+function statsLinks(links) {
+  return {
+      'Total': links.length,
+      'Unique': new Set(links.map((link) => link.href)).size
+      //new Set crea una colección de valores únicos
+      // .map crea una nuevo array
+  }
+}
+function statsValidate(links) {
+  console.log(links);
+  return {
+      'Total': links.length,
+      'Unique': new Set(links.map((link) => link.href)).size,
+      'Broken': links.filter((link) => link.status !== 200 && link.statusText === 'fail').length,
+  }
 }
 
 
-module.exports = { verifyPath, pathExists, checkPathType, verifyMarkdown, readFileMarkdown, extractLink, validateLinks, readDir}
+
+module.exports = { verifyPath, pathExists, checkPathType, verifyMarkdown, readFileMarkdown, extractLink, validateLinks, readDir, statsLinks, statsValidate}
