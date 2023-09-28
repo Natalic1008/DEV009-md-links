@@ -5,6 +5,7 @@ const axios = require('axios');
 jest.mock('axios');
 
 const testPath = 'test/prueba.md'
+const testSubCarpeta = 'test/directorio/subcarpeta/prueba3.md'
 
 
 describe('verifyPath', () => {
@@ -118,16 +119,23 @@ describe('validateLinks', () => {
       })
   });
 
-describe('readDir', () => {
+  describe('readDir', () => {
 
-  it('retorna un array con los archivos del directorio', () => {
-    expect(readDir('test/directorio')).toEqual([
-      "test\\directorio\\prueba.md",
-      "test\\directorio\\prueba2.md",
-      "test\\directorio\\sinlink.htm",
-      "test\\directorio\\subcarpeta\\prueba3.md",
-    ])
+    it('retorna un array con los archivos del directorio', () => {
+      expect(readDir('test/directorio')).toEqual([
+        "test\\directorio\\prueba.md",
+        "test\\directorio\\prueba2.md",
+        "test\\directorio\\sinlink.htm",
+        "test\\directorio\\subcarpeta\\prueba3.md",
+      ])
+    });
+
+    it('retorna un array con los archivos de una subcarpeta', () => {
+      expect(readDir('test/directorio/subcarpeta')).toEqual([
+        "test\\directorio\\subcarpeta\\prueba3.md",
+      ])
+    })
   });
- })
+})
 
-});
+

@@ -2,6 +2,7 @@
 
 const {mdLinks} = require('./index.js');
 const { statsValidate, statsLinks} = require('./data.js');
+const c = require('ansi-colors');
 /*const process = require('node:process');*/
 const path = process.argv[2];
 //test/directorio
@@ -28,13 +29,18 @@ const options = {
       } else {
       // Mostrar los enlaces (validados o no) como resultado
       links.forEach((link) => {
-        console.log(`URL: ${link.href}`);
-        console.log(`Texto: ${link.text.slice(0, 50)}`);
+        console.log(`URL: ${c.bold.blue(link.href)}`);
+        console.log(`Texto: ${c.bold.yellow.italic(link.text.slice(0, 50))}`);
         if (options.validate) {
-          console.log(`Status: ${link.status}`);
-          console.log(`Mensaje: ${link.statusText}`);
+          if (link.statusText ==='OK'){
+            console.log(`Status: ${c.bold.green(link.status)}`);
+            console.log(`Mensaje: ${c.bold.green(link.statusText)}`);
+          } else {
+            console.log(`Status: ${c.bold.red(link.status)}`);
+            console.log(`Mensaje: ${c.bold.red(link.statusText)}`);
+          }
         }
-        console.log(`Archivo: ${link.file}\n`);
+        console.log(`File: ${c.bold.cyan(link.file)}\n`);
       });
     }
   })

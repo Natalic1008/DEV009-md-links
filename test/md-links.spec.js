@@ -1,23 +1,29 @@
 const { mdLinks } = require('../index.js');
 
 
-jest.mock('axios');
-
 const testPath = 'test/directorio'
+const testMd = 'test/directorio/prueba2.md'
 
 describe('mdLinks', () => {
 
   it('debe ser una función que resuelva una promesa', () => {
     expect(typeof mdLinks).toBe('function');
-  })
+  });
 
-  
-  it('deria extraer link y valida los enlaces', () => {
+  it('debería devolver un error cuando la ruta no existe', () => {
+    expect(mdLinks('./ruta/noexiste.md')).rejects.toThrowError('La ruta no existe');
+  });
+
+  /*it('debería devolver un error cuando el archivo no es .md', () => {
+    expect(mdLinks('test/directorio/sinlink.htm')).rejects.toThrowError('El archivo no es Markdown (.md).');
+  });*/
+
+    it('deria extraer link  de un directorio y valida los enlaces', () => {
     /*const opciones = { validate: true };*/
-    
+
     return mdLinks(testPath, true)
       .then((link) => {
-        expect(link).toStrictEqual([
+        expect(link).toEqual([
           {
             "file": "test/directorio",
             "href": "https://es.wikipedia.org/wiki/Markdown",
@@ -56,7 +62,7 @@ describe('mdLinks', () => {
           {
             "file": "test/directorio",
             "href": "https://jestjs.io/1",
-            "status": 404,
+            "status": "no responde",
             "statusText": "fail",
             "text": "Jest",
           },
@@ -70,7 +76,7 @@ describe('mdLinks', () => {
         ]);
       });
   });
-  it('debería extraer links correctamente sin validar', () => {
+  it('debería extraer links de un directorio correctamente sin validar', () => {
     return mdLinks(testPath, false).then((result) => {
       expect(result).toEqual([
         {
@@ -110,6 +116,36 @@ describe('mdLinks', () => {
         },
       ]);
     })
+  })
+  it('deria extraer link  de un archivo y valida los enlaces', () => {
+    /*const opciones = { validate: true };*/
+
+    return mdLinks(testMd, true)
+      .then((link) => {
+        expect(link).toEqual([
+          {
+            "file": "test/directorio/prueba2.md",
+            "href": "https://docs.github.com/es/issues",
+            "status": 200,
+            "statusText": "OK",
+            "text": "issues",
+          },
+          {
+            "file": "test/directorio/prueba2.md",
+            "href": "https://docs.github.com/es/issues/using-labels-and-milestones-to-track-work/about-milestones",
+            "status": 200,
+            "statusText": "OK",
+            "text": "milestones",
+          },
+          {
+            "file": "test/directorio/prueba2.md",
+            "href": "https://jestjs.io/1",
+            "status": "no responde",
+            "statusText": "fail",
+            "text": "Jest",
+          },
+        ])
+      })
   })
 });
 
