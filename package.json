@@ -15,7 +15,7 @@
   },
   "scripts": {
     "eslint": "eslint --ext .js .",
-    "test": "jest --verbose --coverage"
+    "test": "jest --coverage"
   },
   "devDependencies": {
     "eslint": "^8.45.0",

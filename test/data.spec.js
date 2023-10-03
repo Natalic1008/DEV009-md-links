@@ -1,11 +1,11 @@
 const path = require('path');
-const { verifyPath, pathExists, checkPathType, verifyMarkdown, extractLink, validateLinks, readDir } = require('../data.js')
+const { verifyPath, pathExists, checkPathType, verifyMarkdown, extractLink, validateLinks, readDir, statsLinks, statsValidate } = require('../data.js')
 const axios = require('axios');
 
 jest.mock('axios');
 
 const testPath = 'test/prueba.md'
-const testSubCarpeta = 'test/directorio/subcarpeta/prueba3.md'
+
 
 
 describe('verifyPath', () => {
@@ -135,7 +135,26 @@ describe('validateLinks', () => {
         "test\\directorio\\subcarpeta\\prueba3.md",
       ])
     })
+    
   });
+
+  describe('statsLinks and statsValidate', () => {
+    const links = [
+      { href: 'https://nodejs.org/', statusText: 'OK' },
+      { href: 'https://nodejs.org/', statusText: 'OK' },
+      { href: 'https://github.com/Laboratoria/bootcamp/assets/12631491/fc6bc380-7824-4fab-ab8f-7ab53cd9d0e4', statusText: 'OK' },
+      { href: 'https://es.wikipedia.org/wiki/Markdown1', statusText: 'fail' },
+      { href: 'https://jestjs.io/1', statusText: 'fail' }
+    ];
+  
+    it('Retorna el número total de links y el número de links únicos', () => {
+      expect(statsLinks(links)).toEqual({ Total: 5, Unique: 4 });
+    });
+  
+    it('Retorna el número de:links totales, links únicos y  links invalidos', () => {
+      expect(statsValidate(links)).toEqual({ Total: 5, Unique: 4, Broken: 2 });
+    });
+  })  
 })
 
 

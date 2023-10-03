@@ -14,13 +14,7 @@ describe('mdLinks', () => {
     expect(mdLinks('./ruta/noexiste.md')).rejects.toThrowError('La ruta no existe');
   });
 
-  /*it('debería devolver un error cuando el archivo no es .md', () => {
-    expect(mdLinks('test/directorio/sinlink.htm')).rejects.toThrowError('El archivo no es Markdown (.md).');
-  });*/
-
-    it('deria extraer link  de un directorio y valida los enlaces', () => {
-    /*const opciones = { validate: true };*/
-
+  it('deria extraer link  de un directorio y valida los enlaces', () => {
     return mdLinks(testPath, true)
       .then((link) => {
         expect(link).toEqual([
@@ -76,6 +70,7 @@ describe('mdLinks', () => {
         ]);
       });
   });
+  
   it('debería extraer links de un directorio correctamente sin validar', () => {
     return mdLinks(testPath, false).then((result) => {
       expect(result).toEqual([
@@ -117,9 +112,8 @@ describe('mdLinks', () => {
       ]);
     })
   })
+ 
   it('deria extraer link  de un archivo y valida los enlaces', () => {
-    /*const opciones = { validate: true };*/
-
     return mdLinks(testMd, true)
       .then((link) => {
         expect(link).toEqual([
